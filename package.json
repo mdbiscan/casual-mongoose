@@ -1,0 +1,30 @@
+{
+  "name": "casual-mongoose",
+  "version": "1.0.0",
+  "description": "A mongodb seeder using Mongoose and Casual",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mdbiscan/casual-mongoose.git"
+  },
+  "keywords": [
+    "mongo",
+    "mongodb",
+    "mongoose",
+    "seed",
+    "casual"
+  ],
+  "author": "M. Biscan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mdbiscan/casual-mongoose/issues"
+  },
+  "homepage": "https://github.com/mdbiscan/casual-mongoose#readme",
+  "dependencies": {
+    "casual": "^1.5.19",
+    "mongoose": "^5.0.13"
+  }
+}
