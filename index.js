@@ -2,6 +2,8 @@ const Mongoose = require('mongoose');
 const casual = require('casual');
 const _ = require('lodash');
 
+Mongoose.Promise = global.Promise;
+
 const BASE_CONFIG = {
   db: '',
   host: 'localhost',
@@ -42,14 +44,6 @@ module.exports = class CasualMongoose {
     this.port = config.port;
     this.username = config.username;
     this.seeds = [];
-
-    if (this.password && this.username) {
-      Mongoose.connect(`mongodb://${this.username}:${this.password}@${this.host}:${this.port}/${this.db}`);
-    } else {
-      Mongoose.connect(`mongodb://${this.host}/${this.db}`);
-    }
-
-    Mongoose.Promise = global.Promise;
   }
 
   seed(Schema, count, fields) {
@@ -65,6 +59,14 @@ module.exports = class CasualMongoose {
     this.seeds.push(seed);
 
     return seed;
+  }
+
+  connect() {
+    if (this.password && this.username) {
+      Mongoose.connect(`mongodb://${this.username}:${this.password}@${this.host}:${this.port}/${this.db}`);
+    } else {
+      Mongoose.connect(`mongodb://${this.host}/${this.db}`);
+    }
   }
 
   exit() {
