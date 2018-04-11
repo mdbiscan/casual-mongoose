@@ -43,14 +43,13 @@ module.exports = class CasualMongoose {
     this.username = config.username;
     this.seeds = [];
 
-    Mongoose.Promise = global.Promise;
-    Mongoose.connection.on('error', () => console.log('CasualMongoose: unable to save schema'));
-
     if (this.password && this.username) {
       Mongoose.connect(`mongodb://${this.username}:${this.password}@${this.host}:${this.port}/${this.db}`);
     } else {
       Mongoose.connect(`mongodb://${this.host}/${this.db}`);
     }
+
+    Mongoose.Promise = global.Promise;
   }
 
   seed(Schema, count, fields) {
@@ -69,6 +68,6 @@ module.exports = class CasualMongoose {
   }
 
   exit() {
-    Promise.all(this.seeds).then(() => process.exit());
+    Promise.all(this.seeds).then(() => Mongoose.connection.close(() => process.exit()));
   }
 }
