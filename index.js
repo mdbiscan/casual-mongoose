@@ -3,45 +3,72 @@ const casual = require('casual');
 const _ = require('lodash');
 
 const BASE_CONFIG = {
-  host: 'localhost',
   db: '',
-  schemas: [],
+  host: 'localhost',
+  port: 27017,
+  username: null,
+  password: null,
 };
 
 function _fields(fields) {
   var f = {};
 
   _.forIn(fields, (value, key) => {
-    if (typeof value === 'object') {
-      f[key] = eval(`casual.${value}`);
-    } else {
+    if (value.executable) {
+      f[key] = eval(`casual.${value.executable}`);
+    } else if(casual[value]) {
       f[key] = casual[value];
+    } else {
+      f[key] = value;
     }
   });
 
   return f;
 };
 
+function _schemaList(fields, count) {
+  const s = [];
+
+  _.times(count, () => s.push(_fields(fields)));
+
+  return s;
+};
+
 module.exports = class CasualMongoose {
   constructor(config = BASE_CONFIG) {
-    this.host = config.host;
     this.db = config.db;
-    this.schemas = config.schemas;
+    this.host = config.host;
+    this.password = config.password;
+    this.port = config.port;
+    this.username = config.username;
+    this.seeds = [];
+
+    Mongoose.Promise = global.Promise;
+    Mongoose.connection.on('error', () => console.log('CasualMongoose: unable to save schema'));
+
+    if (this.password && this.username) {
+      Mongoose.connect(`mongodb://${this.username}:${this.password}@${this.host}:${this.port}/${this.db}`);
+    } else {
+      Mongoose.connect(`mongodb://${this.host}/${this.db}`);
+    }
   }
 
   seed(Schema, count, fields) {
-    Mongoose.connect(`mongodb://${this.host}/${this.db}`);
+    const schemaList = _schemaList(fields, count);
 
-    Mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
-
-    return new Promise((resolve, reject) => {
-      Schema.create(_fields(fields), (err, schema) => {
-        if (err) reject(err);
-
-        Mongoose.connection.close()
-
-        return resolve(schema);
+    const seed = new Promise((resolve, reject) => {
+      Schema.create(schemaList, (err, schemaList) => {
+        if (err) return reject(err);
+        return resolve(schemaList);
       });
     });
+
+    this.seeds.push(seed);
+
+    return seed;
+  }
+
+  exit() {
+    Promise.all(this.seeds).then(() => process.exit());
   }
 }
