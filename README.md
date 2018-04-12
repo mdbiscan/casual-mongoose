@@ -18,12 +18,14 @@ Arg|Definition
 ----|----
 Schema|Mongoose model from your project
 count|How many models to save
-fields|An object of fields, including embedded fieldsets
+fields|An object of fields: strings, numbers, objects, and arrays.
 
 # exit()
 The exit function waits for `Promise.all` to finish and then exits the terminal process.
 
 # Using casual API with fields
+**Casual API** https://github.com/boo1ean/casual
+
 You do not need to execute anything from casual, but rather use it's API through strings. If the string must execute, you can set the field as `executable` with a string of the function called off of casual. If you wish to use your own string, simply use a string that does not represent a field from the casual API.
 
 # Example Setup

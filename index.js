@@ -16,8 +16,17 @@ function _fields(fields) {
   var f = {};
 
   _.forIn(fields, (value, key) => {
-    if (value.executable) {
-      f[key] = eval(`casual.${value.executable}`);
+    if (typeof value === 'object') {
+      if (value.executable) {
+        f[key] = eval(`casual.${value.executable}`);
+      } else if (value.length) {
+        f[key] = [];
+        _.forEach(value, (v) => f[key].push(_fields(v)));
+      } else if (!value) {
+        throw 'CasualMongoose: no value for field'
+      } else {
+        f[key] = _fields(value);
+      }
     } else if(casual[value]) {
       f[key] = casual[value];
     } else {
