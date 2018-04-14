@@ -78,7 +78,7 @@ module.exports = class CasualMongoose {
     }
   }
 
-  exit() {
+  disconnect() {
     Promise.all(this.seeds).then(() => Mongoose.connection.close(() => process.exit()));
   }
 }
