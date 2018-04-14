@@ -26,7 +26,11 @@ The exit function waits for `Promise.all` to finish and then exits the terminal 
 # Using casual API with fields
 **Casual API** https://github.com/boo1ean/casual
 
-You do not need to execute anything from casual, but rather use it's API through strings. If the string must execute, you can set the field as `executable` with a string of the function called off of casual. If you wish to use your own string, simply use a string that does not represent a field from the casual API.
+```javascript
+const cm = new CasualMongoose(config);
+cm.casual
+```
+Casual is availabe off of the instance for convenience. You do not need to execute from casual if you do not wish, but rather use it's API with strings. If the string must execute, you can set the field as `executable` with a string of the function called off of casual. You can even use your own value.
 
 # Example Setup
 Using `async/await`, you can set up your documents, related documents, and subdocuments, finishing off with an exit command.
@@ -38,42 +42,40 @@ const AuthorSchema = require('../authors'); // ie. Mongoose.model('author', Auth
 const BookSchema = require('../books'); // ie. Mongoose.model('book', BookSchema);
 
 // Setup a CasualMongoose
-const casualMongoose = new CasualMongoose({
+const cm = new CasualMongoose({
   db: 'mydatabase',
   host: 'localhost',
 });
 
-async function authors() {
-  return await casualMongoose.seed(AuthorSchema, 10, {
+async function seedAuthors() {
+  return await cm.seed(AuthorSchema, 10, {
     firstName: 'first_name',
     lastName: 'last_name',
   });
 }
 
 // Setup a related document
-async function book(id) {
-  return await casualMongoose.seed(BookSchema, 1, {
+async function seedBooks(id) {
+  const bookCount =  Math.ceil(Math.random() * 5);
+  
+  return await cm.seed(BookSchema, bookCount, {
     authorId: id,
     title: 'title',
     chapters: { executable: 'integer(15, 40)' },
     pages: { executable: 'integer(100, 300)' },
-    signed: 'yes',
+    isSigned: { executable: 'random_element(["Confirmed", "Unconfirmed"]'),
   });
 }
 
-async function buildAuthors() {
-  const authorList = await authors();
+async function seedAuthorsWithBooks() {
+  const authorList = await seedAuthors();
 
-  authorList.forEach(async ({ _id }) => await book(_id));
+  authorList.forEach(async ({ id }) => await seedBooks(id));
 }
 
-async function seedAll() {
-  await buildAuthors();
+await seedAuthorsWithBooks();
 
-  casualMongoose.exit();
-}
-
-seedAll();
+cm.disconnect();
 ```
 ```javascript
 // package.json

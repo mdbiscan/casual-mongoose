@@ -53,6 +53,8 @@ module.exports = class CasualMongoose {
     this.port = config.port;
     this.username = config.username;
     this.seeds = [];
+
+    this.casual = casual;
   }
 
   seed(Schema, count, fields) {
