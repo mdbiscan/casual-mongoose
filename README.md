@@ -20,8 +20,8 @@ Schema|Mongoose model from your project
 count|How many models to save
 fields|An object of fields: strings, numbers, objects, and arrays.
 
-# exit()
-The exit function waits for `Promise.all` to finish and then exits the terminal process.
+# disconnect()
+The disconnect function waits for `Promise.all` to finish, then disconnects from the database and exits the terminal process.
 
 # Using casual API with fields
 **Casual API** https://github.com/boo1ean/casual
